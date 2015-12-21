@@ -17,6 +17,7 @@ import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.webkit.WebView;
 
 import com.paypal.android.MEP.CheckoutButton;
 import com.paypal.android.MEP.PayPal;
@@ -37,7 +38,7 @@ import android.view.View.OnClickListener;
 public class PayPalMPL extends CordovaPlugin implements OnClickListener {
 
 	public static PayPalMPL thisPlugin;
-	
+	public  WebView webView;
 	private int appEnv = PayPal.ENV_NONE;
 	private String appId = "APP-80W284485P519543T";
 	
@@ -59,7 +60,9 @@ public class PayPalMPL extends CordovaPlugin implements OnClickListener {
 	private static final int PAYPAL_BUTTON_ID = 10001;
 	
 	private CallbackContext payCallback = null;
-	
+	public PayPalMPL(WebView webview) {
+        	this.webView = webView;
+    	}
 	@Override
 	public boolean execute(String action, final JSONArray inputs, final CallbackContext callbackContext) throws JSONException {
 		Log.d(LOGTAG, "Plugin Called: " + action);
@@ -205,7 +208,7 @@ public class PayPalMPL extends CordovaPlugin implements OnClickListener {
 		pp.setDynamicAmountCalculationEnabled(false);
 		
 		if( this.ppButton != null ) {
-			webView.removeView( this.ppButton );
+			this.webView.removeView( this.ppButton );
 			this.ppButton = null;
 		}
 		
@@ -217,7 +220,7 @@ public class PayPalMPL extends CordovaPlugin implements OnClickListener {
 		// You'll need to have an OnClickListener for the CheckoutButton.
 		this.ppButton.setOnClickListener(this);
 		this.ppButton.setId(PAYPAL_BUTTON_ID);		
-		webView.addView( this.ppButton );
+		this.webView.addView( this.ppButton );
 		this.ppButton.setVisibility( bHideButton ? View.INVISIBLE : View.VISIBLE );		
 
 		callbackContext.sendPluginResult( new PluginResult(Status.OK) );
@@ -240,7 +243,7 @@ public class PayPalMPL extends CordovaPlugin implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if (v == (CheckoutButton) webView.findViewById(PAYPAL_BUTTON_ID)) {
+		if (v == (CheckoutButton) this.webView.findViewById(PAYPAL_BUTTON_ID)) {
 			Log.d(LOGTAG, "paypal button clicked.");
 			
 			checkout();
